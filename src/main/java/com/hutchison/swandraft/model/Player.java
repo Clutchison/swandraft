@@ -14,12 +14,12 @@ public class Player {
     String discordId;
     int points;
     int startingPosition;
-    boolean hasReceivedBye;
-    boolean hasReportedThisRound;
+    boolean receivedBye;
+    boolean reportedThisRound;
     Player currentOpponent;
     Set<Player> previousOpponents;
 
-    public static Player initialize(PlayerRecord playerRecord, int startingPosition, Player currentOpponent) {
+    public static Player initialize(PlayerRecord playerRecord, int startingPosition) {
         return new Player(
                 playerRecord.getPlayerRecordId(),
                 playerRecord.getDiscordId(),
@@ -27,7 +27,7 @@ public class Player {
                 startingPosition,
                 false,
                 false,
-                currentOpponent,
+                null,
                 Collections.unmodifiableSet(new HashSet<>())
         );
     }
@@ -42,8 +42,8 @@ public class Player {
                     discordId,
                     points + pointsToAdd,
                     startingPosition,
-                    hasReceivedBye,
-                    hasReportedThisRound,
+                    receivedBye,
+                    reportedThisRound,
                     currentOpponent,
                     previousOpponents
             );

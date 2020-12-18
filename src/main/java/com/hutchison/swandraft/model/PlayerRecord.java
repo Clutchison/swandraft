@@ -1,7 +1,10 @@
 package com.hutchison.swandraft.model;
 
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +17,7 @@ import javax.persistence.Table;
 @Table(name = "player_record")
 @Builder(toBuilder = true)
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayerRecord {
 
     @Id
@@ -32,4 +36,7 @@ public class PlayerRecord {
 
     @Column(name = "total_score", unique = true, nullable = false)
     int totalScore;
+
+    public PlayerRecord() {
+    }
 }
