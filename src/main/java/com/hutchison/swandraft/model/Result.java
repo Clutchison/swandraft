@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class Result {
-    String steamId;
+    String discordId;
     int points;
 }

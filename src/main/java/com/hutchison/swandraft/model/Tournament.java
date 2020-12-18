@@ -2,11 +2,9 @@ package com.hutchison.swandraft.model;
 
 import lombok.Builder;
 import lombok.Value;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,40 +30,10 @@ public class Tournament {
         this.playerRecords = Collections.unmodifiableSet(playerRecords);
     }
 
-    public String report(Map<String, Integer> playerPointMap) {
-        TournamentSnapshot latestSnapshot = snapshots.get(snapshots.size() - 1);
-
-        String errorMessage = assertPlayersHaveNotReported(playerPointMap, latestSnapshot);
-        if (StringUtils.hasText(errorMessage)) return errorMessage;
-
-        Map<String, Player> players = new HashMap<>(Map.copyOf(latestSnapshot.getPlayers()));
-        playerPointMap.forEach((discordId, player) ->
-                players.put(discordId, addPointsToPlayer(latestSnapshot, discordId, player)));
-
-        String updateMessage = playerPointMap.entrySet().stream()
-                .map(es -> es.getKey() + " gained " + es.getValue() + " points")
-                .collect(Collectors.joining("; ")) + ".";
-
-        snapshots.add(latestSnapshot.toBuilder()
-                .players(players)
-                .updateMessage(updateMessage)
-                .build());
-
-        return updateMessage;
-    }
-
-    private String assertPlayersHaveNotReported(Map<String, Integer> playerPointMap, TournamentSnapshot latestSnapshot) {
-        return playerPointMap.keySet().stream()
-                .filter(discordId -> latestSnapshot.getPlayers().get(discordId).isReportedThisRound())
-                .map(discordId -> discordId + " has already reported this round.")
-                .collect(Collectors.joining("; "));
-    }
-
-    private Player addPointsToPlayer(TournamentSnapshot snapshot, String steamId, int pointsToAdd) {
-        return snapshot.getPlayers().get(steamId).toBuilder()
-                .plusPoints(pointsToAdd)
-                .reportedThisRound(true)
-                .build();
+    public String report(Set<Result> results) {
+        TournamentSnapshot snapshot = snapshots.get(snapshots.size() - 1).report(results);
+        snapshots.add(snapshot);
+        return snapshot.getUpdateMessage();
     }
 
     public static class TournamentBuilder {
