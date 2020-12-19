@@ -1,4 +1,4 @@
-package com.hutchison.swandraft.model;
+package com.hutchison.swandraft.model.entity;
 
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,8 +1,7 @@
 package com.hutchison.swandraft.service;
 
-import com.hutchison.swandraft.model.Player;
-import com.hutchison.swandraft.model.PlayerRecord;
-import com.hutchison.swandraft.model.Result;
+import com.hutchison.swandraft.model.entity.PlayerRecord;
+import com.hutchison.swandraft.model.dto.Result;
 import com.hutchison.swandraft.model.Tournament;
 import org.springframework.stereotype.Service;
 

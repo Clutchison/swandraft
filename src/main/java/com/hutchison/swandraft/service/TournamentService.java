@@ -1,6 +1,6 @@
 package com.hutchison.swandraft.service;
 
-import com.hutchison.swandraft.model.Result;
+import com.hutchison.swandraft.model.dto.Result;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;

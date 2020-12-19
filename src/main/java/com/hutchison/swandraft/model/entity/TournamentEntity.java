@@ -1,6 +1,9 @@
-package com.hutchison.swandraft.model;
+package com.hutchison.swandraft.model.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hutchison.swandraft.model.SeedingStyle;
+import com.hutchison.swandraft.model.TournamentSnapshot;
+import com.hutchison.swandraft.model.entity.PlayerRecord;
 import com.hutchison.swandraft.util.ListConverter;
 import lombok.AccessLevel;
 import lombok.Builder;

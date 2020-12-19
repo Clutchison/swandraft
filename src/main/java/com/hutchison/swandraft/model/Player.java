@@ -1,5 +1,6 @@
 package com.hutchison.swandraft.model;
 
+import com.hutchison.swandraft.model.entity.PlayerRecord;
 import lombok.Builder;
 import lombok.Value;
 

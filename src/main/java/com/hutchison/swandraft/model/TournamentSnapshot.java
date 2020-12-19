@@ -1,5 +1,6 @@
 package com.hutchison.swandraft.model;
 
+import com.hutchison.swandraft.model.dto.Result;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.util.StringUtils;
