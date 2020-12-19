@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,12 +17,17 @@ import static com.hutchison.swandraft.model.SeedingStyle.CROSS;
 @Value
 @Builder(toBuilder = true)
 public class Tournament {
-    List<TournamentSnapshot> snapshots;
+    UUID tournamentUuid;
     SeedingStyle seedingStyle;
     int totalRounds;
     Set<PlayerRecord> playerRecords;
+    List<TournamentSnapshot> snapshots;
 
-    public Tournament(TournamentSnapshot initialSnapshot, SeedingStyle seedingStyle, int totalRounds, Set<PlayerRecord> playerRecords) {
+    public Tournament(TournamentSnapshot initialSnapshot,
+                      SeedingStyle seedingStyle,
+                      int totalRounds,
+                      Set<PlayerRecord> playerRecords) {
+        this.tournamentUuid = UUID.randomUUID();
         this.snapshots = new ArrayList<>();
         snapshots.add(initialSnapshot);
         this.seedingStyle = seedingStyle;

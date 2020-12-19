@@ -3,13 +3,14 @@ package com.hutchison.swandraft.model;
 import lombok.Builder;
 import lombok.Value;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 @Value
 @Builder(toBuilder = true)
-public class Player {
+public class Player implements Serializable {
     Long playerRecordId;
     String discordId;
     int points;

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.springframework.util.StringUtils;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Value
 @Builder(toBuilder = true)
-public class TournamentSnapshot {
+public class TournamentSnapshot implements Serializable {
     Map<String, Player> players;
     int currentRound;
     String updateMessage;
@@ -22,7 +23,7 @@ public class TournamentSnapshot {
         this.updateMessage = updateMessage;
     }
 
-    public TournamentSnapshot report(Set<Result>results) {
+    public TournamentSnapshot report(Set<Result> results) {
         String errorMessage = assertPlayersHaveNotReported(results);
         if (StringUtils.hasText(errorMessage)) return TournamentSnapshot.builder()
                 .updateMessage(errorMessage)
