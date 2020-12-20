@@ -10,24 +10,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
 @Builder(toBuilder = true)
 public class TournamentSnapshot implements Serializable {
     Map<String, Player> players;
     int currentRound;
-    String updateMessage;
+    String message;
 
-    public TournamentSnapshot(Map<String, Player> players, int currentRound, String updateMessage) {
+    public TournamentSnapshot(Map<String, Player> players, int currentRound, String message) {
         this.players = players == null ? new HashMap<>() : players;
         this.currentRound = currentRound;
-        this.updateMessage = updateMessage;
+        this.message = message;
     }
 
     public TournamentSnapshot report(Set<Result> results) {
         String errorMessage = assertPlayersHaveNotReported(results);
         if (StringUtils.hasText(errorMessage)) return TournamentSnapshot.builder()
-                .updateMessage(errorMessage)
+                .message(errorMessage)
                 .build();
 
         Map<String, Player> players = new HashMap<>(Map.copyOf(this.players));
@@ -40,7 +41,7 @@ public class TournamentSnapshot implements Serializable {
 
         return this.toBuilder()
                 .players(players)
-                .updateMessage(updateMessage)
+                .message(updateMessage)
                 .build();
     }
 
@@ -56,5 +57,38 @@ public class TournamentSnapshot implements Serializable {
                 .plusPoints(pointsToAdd)
                 .reportedThisRound(true)
                 .build();
+    }
+
+    public TournamentSnapshot advance() {
+        Set<String> playersNeedingToReport = players.values().stream()
+                .filter(Player::isReportedThisRound)
+                .map(Player::getDiscordId)
+                .collect(Collectors.toSet());
+        if (playersNeedingToReport.size() > 0)
+            return this.toBuilder()
+                    .message("These players still need to report: " + String.join("; " + playersNeedingToReport))
+                    .build();
+
+        return this.toBuilder()
+                .players(pairPlayers())
+                .currentRound(currentRound + 1)
+                .message("Round " + currentRound + 1 + "!")
+                .build();
+    }
+
+    private Map<String, Player> pairPlayers() {
+        return this.players.values().stream()
+                .map(op -> op.toBuilder()
+                        .reportedThisRound(false)
+                        .previousOpponents(Stream.concat(
+                                Set.copyOf(op.getPreviousOpponents()).stream(),
+                                Stream.of(op.getCurrentOpponent()))
+                                .collect(Collectors.toSet()))
+                        .currentOpponent(null)
+                        .build())
+                .collect(Collectors.toMap(
+                        Player::getDiscordId,
+                        p -> p
+                ));
     }
 }

@@ -25,6 +25,20 @@ public class Tournament {
     Set<PlayerRecord> playerRecords;
     List<TournamentSnapshot> snapshots;
 
+    public Tournament(
+            UUID tournamentUuid,
+            SeedingStyle seedingStyle,
+            int totalRounds,
+            Set<PlayerRecord> playerRecords,
+            List<TournamentSnapshot> snapshots
+    ) {
+        this.tournamentUuid = tournamentUuid;
+        this.seedingStyle = seedingStyle;
+        this.totalRounds = totalRounds;
+        this.playerRecords = playerRecords;
+        this.snapshots = snapshots;
+    }
+
     public Tournament(TournamentSnapshot initialSnapshot,
                       SeedingStyle seedingStyle,
                       int totalRounds,
@@ -38,9 +52,23 @@ public class Tournament {
     }
 
     public String report(Set<Result> results) {
-        TournamentSnapshot snapshot = snapshots.get(snapshots.size() - 1).report(results);
+        TournamentSnapshot snapshot = getLatestSnapshot().report(results);
         snapshots.add(snapshot);
-        return snapshot.getUpdateMessage();
+        return snapshot.getMessage();
+    }
+
+    public String getMessage() {
+        return getLatestSnapshot().getMessage();
+    }
+
+    public String advance() {
+        TournamentSnapshot snapshot = getLatestSnapshot().advance();
+        snapshots.add(snapshot);
+        return snapshot.getMessage();
+    }
+
+    private TournamentSnapshot getLatestSnapshot() {
+        return snapshots.get(snapshots.size() - 1);
     }
 
     public static class TournamentBuilder {
@@ -75,7 +103,7 @@ public class Tournament {
             return TournamentSnapshot.builder()
                     .currentRound(0)
                     .players(players.stream().collect(Collectors.toMap(Player::getDiscordId, p -> p)))
-                    .updateMessage("Initialized tournament.")
+                    .message("Initialized tournament.")
                     .build();
         }
 

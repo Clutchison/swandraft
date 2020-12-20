@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +19,15 @@ public class TournamentQueue {
     public TournamentQueue() {
         playerRecords = Collections.emptyMap();
         message = "Initialized. No records provided.";
+    }
+
+    public TournamentQueue(Map<String, PlayerRecord> prs, String message) {
+        this.playerRecords = Collections.unmodifiableMap(prs);
+        this.message = message;
+    }
+
+    public TournamentQueue(PlayerRecord pr) {
+        this(Set.of(pr));
     }
 
     public TournamentQueue(Set<PlayerRecord> playerRecords) {

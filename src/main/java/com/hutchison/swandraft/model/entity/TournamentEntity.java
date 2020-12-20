@@ -2,8 +2,8 @@ package com.hutchison.swandraft.model.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hutchison.swandraft.model.SeedingStyle;
+import com.hutchison.swandraft.model.Tournament;
 import com.hutchison.swandraft.model.TournamentSnapshot;
-import com.hutchison.swandraft.model.entity.PlayerRecord;
 import com.hutchison.swandraft.util.ListConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,4 +63,24 @@ public class TournamentEntity {
     @Column(unique = false, nullable = true, name = "snapshots")
     @Lob
     String snapshotsJson;
+
+    public Tournament toTournament() {
+        return new Tournament(
+                tournamentUuid,
+                seedingStyle,
+                totalRounds,
+                playerRecords,
+                snapshots
+        );
+    }
+
+    public static TournamentEntity fromTournament(Tournament tournament) {
+        return TournamentEntity.builder()
+                .tournamentUuid(tournament.getTournamentUuid())
+                .seedingStyle(tournament.getSeedingStyle())
+                .totalRounds(tournament.getTotalRounds())
+                .playerRecords(tournament.getPlayerRecords())
+                .snapshots(tournament.getSnapshots())
+                .build();
+    }
 }

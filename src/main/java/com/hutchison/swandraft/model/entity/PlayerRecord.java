@@ -48,6 +48,13 @@ public class PlayerRecord {
         this.totalScore = totalScore;
     }
 
+    public PlayerRecord(String discordId) {
+        this.name = discordId;
+        this.discordId = discordId;
+        this.gamesPlayed = 0;
+        this.totalScore = 0;
+    }
+
     public PlayerRecord() {
 
     }
