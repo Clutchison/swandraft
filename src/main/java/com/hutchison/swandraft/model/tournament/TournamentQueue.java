@@ -1,6 +1,6 @@
-package com.hutchison.swandraft.model;
+package com.hutchison.swandraft.model.tournament;
 
-import com.hutchison.swandraft.model.entity.PlayerRecord;
+import com.hutchison.swandraft.model.entity.PlayerEntity;
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 @Value
 @Builder(toBuilder = true)
 public class TournamentQueue {
-    Map<String, PlayerRecord> playerRecords;
+    Map<Long, PlayerEntity> playerRecords;
     String message;
 
     public TournamentQueue() {
@@ -21,43 +21,43 @@ public class TournamentQueue {
         message = "Initialized. No records provided.";
     }
 
-    public TournamentQueue(Map<String, PlayerRecord> prs, String message) {
+    public TournamentQueue(Map<Long, PlayerEntity> prs, String message) {
         this.playerRecords = Collections.unmodifiableMap(prs);
         this.message = message;
     }
 
-    public TournamentQueue(PlayerRecord pr) {
+    public TournamentQueue(PlayerEntity pr) {
         this(Set.of(pr));
     }
 
-    public TournamentQueue(Set<PlayerRecord> playerRecords) {
-        this.playerRecords = Collections.unmodifiableMap(playerRecords.stream()
+    public TournamentQueue(Set<PlayerEntity> playerEntities) {
+        this.playerRecords = Collections.unmodifiableMap(playerEntities.stream()
                 .collect(Collectors.toMap(
-                        PlayerRecord::getDiscordId,
+                        PlayerEntity::getDiscordId,
                         pr -> pr
                 )));
         message = "Initialized from existing records.";
     }
 
-    public TournamentQueue add(PlayerRecord playerRecord) {
-        if (playerRecords.get(playerRecord.getDiscordId()) != null) return this.toBuilder()
-                .message(playerRecord.getDiscordId() + " is already entered.")
+    public TournamentQueue add(PlayerEntity playerEntity) {
+        if (playerRecords.get(playerEntity.getDiscordId()) != null) return this.toBuilder()
+                .message(playerEntity.getDiscordId() + " is already entered.")
                 .build();
 
         return this.toBuilder()
                 .playerRecords(
                         Collections.unmodifiableMap(Stream.concat(
                                 Map.copyOf(this.playerRecords).values().stream(),
-                                Stream.of(playerRecord))
+                                Stream.of(playerEntity))
                                 .collect(Collectors.toMap(
-                                        PlayerRecord::getDiscordId,
+                                        PlayerEntity::getDiscordId,
                                         pr -> pr
                                 ))))
-                .message(playerRecord.getDiscordId() + " successfully entered.")
+                .message(playerEntity.getDiscordId() + " successfully entered.")
                 .build();
     }
 
-    public Set<PlayerRecord> getPlayerRecords() {
+    public Set<PlayerEntity> getPlayerRecords() {
         return Set.copyOf(this.playerRecords.values());
     }
 }

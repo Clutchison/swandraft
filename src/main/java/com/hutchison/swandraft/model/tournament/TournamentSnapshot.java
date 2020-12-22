@@ -1,5 +1,6 @@
-package com.hutchison.swandraft.model;
+package com.hutchison.swandraft.model.tournament;
 
+import com.hutchison.swandraft.model.Player;
 import com.hutchison.swandraft.model.dto.Result;
 import lombok.Builder;
 import lombok.Value;
@@ -15,11 +16,11 @@ import java.util.stream.Stream;
 @Value
 @Builder(toBuilder = true)
 public class TournamentSnapshot implements Serializable {
-    Map<String, Player> players;
+    Map<Long, Player> players;
     int currentRound;
     String message;
 
-    public TournamentSnapshot(Map<String, Player> players, int currentRound, String message) {
+    public TournamentSnapshot(Map<Long, Player> players, int currentRound, String message) {
         this.players = players == null ? new HashMap<>() : players;
         this.currentRound = currentRound;
         this.message = message;
@@ -31,7 +32,7 @@ public class TournamentSnapshot implements Serializable {
                 .message(errorMessage)
                 .build();
 
-        Map<String, Player> players = new HashMap<>(Map.copyOf(this.players));
+        Map<Long, Player> players = new HashMap<>(Map.copyOf(this.players));
         results.forEach(result ->
                 players.put(result.getDiscordId(), addPointsToPlayer(result.getDiscordId(), result.getPoints())));
 
@@ -52,8 +53,8 @@ public class TournamentSnapshot implements Serializable {
                 .collect(Collectors.joining("; "));
     }
 
-    private Player addPointsToPlayer(String steamId, int pointsToAdd) {
-        return players.get(steamId).toBuilder()
+    private Player addPointsToPlayer(Long discordId, int pointsToAdd) {
+        return players.get(discordId).toBuilder()
                 .plusPoints(pointsToAdd)
                 .reportedThisRound(true)
                 .build();
@@ -62,7 +63,7 @@ public class TournamentSnapshot implements Serializable {
     public TournamentSnapshot advance() {
         Set<String> playersNeedingToReport = players.values().stream()
                 .filter(Player::isReportedThisRound)
-                .map(Player::getDiscordId)
+                .map(Player::getName)
                 .collect(Collectors.toSet());
         if (playersNeedingToReport.size() > 0)
             return this.toBuilder()
@@ -76,7 +77,7 @@ public class TournamentSnapshot implements Serializable {
                 .build();
     }
 
-    private Map<String, Player> pairPlayers() {
+    private Map<Long, Player> pairPlayers() {
         return this.players.values().stream()
                 .map(op -> op.toBuilder()
                         .reportedThisRound(false)

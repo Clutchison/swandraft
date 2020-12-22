@@ -4,6 +4,7 @@ import com.hutchison.swandraft.model.SeedingStyle;
 import com.hutchison.swandraft.model.dto.Result;
 import com.hutchison.swandraft.service.TournamentService;
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,12 @@ public class TournamentController {
     }
 
     @PostMapping(path = "/enter")
-    public ResponseEntity<String> enter(@RequestBody String discordId) {
-        return ResponseEntity.ok(service.enter(discordId));
+    public ResponseEntity<String> enter(
+            @RequestBody @NonNull Long discordId,
+            @RequestBody(required = false) String name,
+            @RequestBody(required = false) Integer discriminator
+    ) {
+        return ResponseEntity.ok(service.enter(discordId, name, discriminator));
     }
 
     @PutMapping(path = "/configure")

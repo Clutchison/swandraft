@@ -1,6 +1,6 @@
 package com.hutchison.swandraft.controller;
 
-import com.hutchison.swandraft.model.Tournament;
+import com.hutchison.swandraft.model.tournament.Tournament;
 import com.hutchison.swandraft.service.TestService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

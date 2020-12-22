@@ -2,12 +2,15 @@ package com.hutchison.swandraft.model.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hutchison.swandraft.model.SeedingStyle;
-import com.hutchison.swandraft.model.Tournament;
-import com.hutchison.swandraft.model.TournamentSnapshot;
+import com.hutchison.swandraft.model.tournament.Tournament;
+import com.hutchison.swandraft.model.tournament.TournamentSnapshot;
 import com.hutchison.swandraft.util.ListConverter;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.CascadeType;
@@ -32,6 +35,8 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TournamentEntity {
 
     static ObjectMapper objectMapper = new ObjectMapper();
@@ -54,7 +59,7 @@ public class TournamentEntity {
     @JoinTable(name = "tournament_player_record",
             joinColumns = @JoinColumn(name = "tournament_id"),
             inverseJoinColumns = @JoinColumn(name = "player_record_id"))
-    Set<PlayerRecord> playerRecords;
+    Set<PlayerEntity> playerEntities;
 
     @Convert(converter = ListConverter.class)
     @Transient
@@ -65,13 +70,13 @@ public class TournamentEntity {
     String snapshotsJson;
 
     public Tournament toTournament() {
-        return new Tournament(
-                tournamentUuid,
-                seedingStyle,
-                totalRounds,
-                playerRecords,
-                snapshots
-        );
+        return Tournament.builder()
+                .tournamentUuid(tournamentUuid)
+                .seedingStyle(seedingStyle)
+                .totalRounds(totalRounds)
+                .playerEntities(playerEntities)
+                .snapshots(snapshots)
+                .build();
     }
 
     public static TournamentEntity fromTournament(Tournament tournament) {
@@ -79,7 +84,7 @@ public class TournamentEntity {
                 .tournamentUuid(tournament.getTournamentUuid())
                 .seedingStyle(tournament.getSeedingStyle())
                 .totalRounds(tournament.getTotalRounds())
-                .playerRecords(tournament.getPlayerRecords())
+                .playerEntities(tournament.getPlayerEntities())
                 .snapshots(tournament.getSnapshots())
                 .build();
     }

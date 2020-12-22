@@ -1,10 +1,10 @@
 package com.hutchison.swandraft.service;
 
 import com.hutchison.swandraft.model.SeedingStyle;
-import com.hutchison.swandraft.model.Tournament;
-import com.hutchison.swandraft.model.TournamentQueue;
+import com.hutchison.swandraft.model.tournament.Tournament;
+import com.hutchison.swandraft.model.tournament.TournamentQueue;
 import com.hutchison.swandraft.model.dto.Result;
-import com.hutchison.swandraft.model.entity.PlayerRecord;
+import com.hutchison.swandraft.model.entity.PlayerEntity;
 import com.hutchison.swandraft.model.entity.TournamentEntity;
 import com.hutchison.swandraft.repository.PlayerRecordRepository;
 import com.hutchison.swandraft.repository.TournamentEntityRepository;
@@ -35,9 +35,9 @@ public class TournamentService {
         this.tournamentEntityRepository = tournamentEntityRepository;
     }
 
-    public String enter(String discordId) {
-        PlayerRecord pr = playerRecordRepository.findByDiscordId(discordId)
-                .orElseGet(() -> playerRecordRepository.save(new PlayerRecord(discordId)));
+    public String enter(Long discordId, String name, Integer discriminator) {
+        PlayerEntity pr = playerRecordRepository.findByDiscordId(discordId)
+                .orElseGet(() -> playerRecordRepository.save(PlayerEntity.create(discordId, name, discriminator)));
         queue = queue == null ?
                 new TournamentQueue(pr) :
                 queue.add(pr);
@@ -54,7 +54,7 @@ public class TournamentService {
         if (this.tournament != null && !forceRestart) return "Can't start, tournament already in progress!";
         if (queue == null || queue.getPlayerRecords().size() < 6) return "Can't start, player count is less than six";
         this.tournament = Tournament.builder()
-                .playerRecords(queue.getPlayerRecords())
+                .playerEntities(queue.getPlayerRecords())
                 .seedingStyle(seedingStyle)
                 .totalRounds(totalRounds)
                 .build();
