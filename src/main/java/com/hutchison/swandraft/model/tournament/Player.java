@@ -1,4 +1,4 @@
-package com.hutchison.swandraft.model;
+package com.hutchison.swandraft.model.tournament;
 
 import com.hutchison.swandraft.exception.PlayerBuildException;
 import com.hutchison.swandraft.model.entity.PlayerEntity;

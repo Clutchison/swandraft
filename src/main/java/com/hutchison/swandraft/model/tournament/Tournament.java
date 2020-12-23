@@ -1,30 +1,27 @@
 package com.hutchison.swandraft.model.tournament;
 
-import com.hutchison.swandraft.model.Player;
-import com.hutchison.swandraft.model.SeedingStyle;
 import com.hutchison.swandraft.model.dto.Result;
 import com.hutchison.swandraft.model.entity.PlayerEntity;
+import com.hutchison.swandraft.model.tournament.pairing.Pairing;
+import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static com.hutchison.swandraft.model.SeedingStyle.CROSS;
-import static com.hutchison.swandraft.model.tournament.Pairing.buildCrossPairings;
-import static com.hutchison.swandraft.model.tournament.Pairing.buildRandomPairings;
+import static com.hutchison.swandraft.model.tournament.pairing.SeedingStyle.CROSS;
 
 @Value
 @Builder(toBuilder = true)
 public class Tournament {
-    UUID tournamentUuid;
+    Long tournamentId;
     SeedingStyle seedingStyle;
     int totalRounds;
     Set<PlayerEntity> playerEntities;
@@ -34,31 +31,36 @@ public class Tournament {
 
     // For deserialization
     Tournament(
-            @NonNull UUID tournamentUuid,
+            Long tournamentId,
             @NonNull SeedingStyle seedingStyle,
             int totalRounds,
             @NonNull Set<PlayerEntity> playerEntities,
             @NonNull List<TournamentSnapshot> snapshots
     ) {
-        this.tournamentUuid = tournamentUuid;
+        this.tournamentId = tournamentId;
         this.seedingStyle = seedingStyle;
         this.totalRounds = totalRounds;
         this.playerEntities = Collections.unmodifiableSet(playerEntities);
         this.snapshots = snapshots;
+        validate();
     }
 
     // Brand new tournament
-    Tournament(
-            SeedingStyle seedingStyle,
+    private Tournament(
+            @NonNull SeedingStyle seedingStyle,
             int totalRounds,
-            TournamentSnapshot initialSnapshot,
-            Set<PlayerEntity> playerEntities) {
-        this.tournamentUuid = UUID.randomUUID();
+            @NonNull TournamentSnapshot initialSnapshot,
+            @NonNull Set<PlayerEntity> playerEntities) {
         this.snapshots = new ArrayList<>();
         snapshots.add(initialSnapshot);
         this.seedingStyle = seedingStyle;
         this.totalRounds = totalRounds;
         this.playerEntities = Collections.unmodifiableSet(playerEntities);
+        validate();
+    }
+
+    private void validate() {
+
     }
 
     public String report(Set<Result> results) {
@@ -92,6 +94,7 @@ public class Tournament {
     public static Tournament create(@NonNull Set<PlayerEntity> playerEntities,
                                     @NonNull SeedingStyle seedingStyle,
                                     @NonNull Integer totalRounds) {
+//        validate(playerEntities, seedingStyle, totalRounds);
         return new Tournament(
                 seedingStyle,
                 totalRounds,
@@ -100,29 +103,35 @@ public class Tournament {
         );
     }
 
+    private static void validate(Set<PlayerEntity> playerEntities, SeedingStyle seedingStyle, Integer totalRounds) {
+        List<String> errors = new ArrayList<>();
+        if (playerEntities == null || playerEntities.size() < 6) errors.add("Not enough players.");
+        if (seedingStyle == null) errors.add("No seeding style provided.");
+        if (totalRounds == null || totalRounds <= 0) errors.add("Total rounds must be a positive number.");
+        if (errors.size() > 0) throw new RuntimeException("Error creating tournament: \n- " +
+                String.join("\n- ", errors));
+    }
+
     private TournamentSnapshot getLatestSnapshot() {
         return snapshots.get(snapshots.size() - 1);
     }
 
-    private static TournamentSnapshot buildInitialSnapshot(SeedingStyle seedingStyle, Set<PlayerEntity> playerEntities) {
-        Set<Player> players;
-        switch (seedingStyle == null ? DEFAULT_SEEDING_STYLE : seedingStyle) {
-            case CROSS:
-                players = buildCrossPairings(playerEntities);
-                break;
-            case RANDOM:
-                players = buildRandomPairings(playerEntities);
-                break;
-            case ADJACENT:
-            case SLAUGHTER:
-            default:
-                throw new RuntimeException("Unsupported Seeding Style: " + seedingStyle);
-        }
+    private static TournamentSnapshot buildInitialSnapshot(SeedingStyle seedingStyle,
+                                                           Set<PlayerEntity> playerEntities) {
         return TournamentSnapshot.builder()
                 .currentRound(0)
-                .players(players.stream().collect(Collectors.toMap(Player::getDiscordId, p -> p)))
+                .players(initializePlayers(seedingStyle, playerEntities))
                 .message("Initialized tournament.")
                 .build();
+    }
+
+    private static Map<Long, Player> initializePlayers(SeedingStyle seedingStyle,
+                                                       Set<PlayerEntity> playerEntities) {
+        return Pairing.initial(seedingStyle, playerEntities).stream()
+                .collect(Collectors.toMap(
+                        Player::getDiscordId,
+                        p -> p
+                ));
     }
 
     private static int calculateTotalRounds(int playerCount) {

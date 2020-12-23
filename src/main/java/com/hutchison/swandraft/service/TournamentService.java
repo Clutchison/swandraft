@@ -1,6 +1,6 @@
 package com.hutchison.swandraft.service;
 
-import com.hutchison.swandraft.model.SeedingStyle;
+import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.tournament.Tournament;
 import com.hutchison.swandraft.model.tournament.TournamentQueue;
 import com.hutchison.swandraft.model.dto.Result;

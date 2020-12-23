@@ -1,7 +1,7 @@
 package com.hutchison.swandraft.model.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hutchison.swandraft.model.SeedingStyle;
+import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.tournament.Tournament;
 import com.hutchison.swandraft.model.tournament.TournamentSnapshot;
 import com.hutchison.swandraft.util.ListConverter;
@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.CascadeType;
@@ -46,9 +45,6 @@ public class TournamentEntity {
     @Column(unique = true, nullable = false, name = "tournament_id")
     Long tournamentId;
 
-    @Column(unique = true, nullable = false, name = "tournament_uuid")
-    UUID tournamentUuid;
-
     @Column(unique = false, nullable = false, name = "seeding_style")
     SeedingStyle seedingStyle;
 
@@ -71,7 +67,6 @@ public class TournamentEntity {
 
     public Tournament toTournament() {
         return Tournament.builder()
-                .tournamentUuid(tournamentUuid)
                 .seedingStyle(seedingStyle)
                 .totalRounds(totalRounds)
                 .playerEntities(playerEntities)
@@ -81,7 +76,6 @@ public class TournamentEntity {
 
     public static TournamentEntity fromTournament(Tournament tournament) {
         return TournamentEntity.builder()
-                .tournamentUuid(tournament.getTournamentUuid())
                 .seedingStyle(tournament.getSeedingStyle())
                 .totalRounds(tournament.getTotalRounds())
                 .playerEntities(tournament.getPlayerEntities())

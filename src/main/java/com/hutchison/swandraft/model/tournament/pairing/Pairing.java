@@ -1,7 +1,8 @@
-package com.hutchison.swandraft.model.tournament;
+package com.hutchison.swandraft.model.tournament.pairing;
 
-import com.hutchison.swandraft.model.Player;
 import com.hutchison.swandraft.model.entity.PlayerEntity;
+import com.hutchison.swandraft.model.tournament.Player;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +12,21 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 public class Pairing {
-    public static Set<Player> buildCrossPairings(Set<PlayerEntity> playerEntities) {
+
+    public static Set<Player> initial(@NonNull SeedingStyle seedingStyle, @NonNull Set<PlayerEntity> playerEntities) {
+        switch (seedingStyle) {
+            case CROSS:
+                return cross(playerEntities);
+            case RANDOM:
+                return random(playerEntities);
+            case ADJACENT:
+            case SLAUGHTER:
+            default:
+                throw new RuntimeException("Unsupported Seeding Style: " + seedingStyle);
+        }
+    }
+
+    private static Set<Player> cross(Set<PlayerEntity> playerEntities) {
         List<PlayerEntity> tempRecords = new ArrayList<>(playerEntities);
         List<PlayerEntity> prs = new ArrayList<>();
         IntStream.range(0, tempRecords.size() / 2)
@@ -23,7 +38,7 @@ public class Pairing {
         return buildPairings(prs);
     }
 
-    public static Set<Player> buildRandomPairings(Set<PlayerEntity> playerEntities) {
+    private static Set<Player> random(Set<PlayerEntity> playerEntities) {
         List<PlayerEntity> prs = new ArrayList<>(playerEntities);
         Collections.shuffle(prs);
         return buildPairings(prs);

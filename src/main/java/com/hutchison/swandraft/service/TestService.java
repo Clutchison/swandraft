@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.hutchison.swandraft.model.SeedingStyle.CROSS;
+import static com.hutchison.swandraft.model.tournament.pairing.SeedingStyle.CROSS;
 
 @Service
 public class TestService {

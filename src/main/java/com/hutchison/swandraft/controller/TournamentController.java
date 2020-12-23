@@ -1,6 +1,6 @@
 package com.hutchison.swandraft.controller;
 
-import com.hutchison.swandraft.model.SeedingStyle;
+import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.dto.Result;
 import com.hutchison.swandraft.service.TournamentService;
 import lombok.AccessLevel;
