@@ -1,10 +1,8 @@
 package com.hutchison.swandraft.model.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
+import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.tournament.Tournament;
-import com.hutchison.swandraft.model.tournament.TournamentSnapshot;
-import com.hutchison.swandraft.util.ListConverter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,10 +21,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity(name = "tournament")
 @Table(name = "tournament")
@@ -57,29 +51,21 @@ public class TournamentEntity {
             inverseJoinColumns = @JoinColumn(name = "player_record_id"))
     Set<PlayerEntity> playerEntities;
 
-    @Convert(converter = ListConverter.class)
-    @Transient
-    List<TournamentSnapshot> snapshots;
-
-    @Column(unique = false, nullable = true, name = "snapshots")
-    @Lob
-    String snapshotsJson;
-
-    public Tournament toTournament() {
-        return Tournament.builder()
-                .seedingStyle(seedingStyle)
-                .totalRounds(totalRounds)
-                .playerEntities(playerEntities)
-                .snapshots(snapshots)
-                .build();
-    }
-
-    public static TournamentEntity fromTournament(Tournament tournament) {
-        return TournamentEntity.builder()
-                .seedingStyle(tournament.getSeedingStyle())
-                .totalRounds(tournament.getTotalRounds())
-                .playerEntities(tournament.getPlayerEntities())
-                .snapshots(tournament.getSnapshots())
-                .build();
-    }
+//    public Tournament toTournament() {
+//        return Tournament.builder()
+//                .seedingStyle(seedingStyle)
+//                .totalRounds(totalRounds)
+//                .players(playerEntities)
+//                .snapshots(snapshots)
+//                .build();
+//    }
+//
+//    public static TournamentEntity fromTournament(Tournament tournament) {
+//        return TournamentEntity.builder()
+//                .seedingStyle(tournament.getSeedingStyle())
+//                .totalRounds(tournament.getTotalRounds())
+//                .playerEntities(tournament.getPlayers())
+//                .snapshots(tournament.getSnapshots())
+//                .build();
+//    }
 }

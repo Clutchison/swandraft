@@ -1,6 +1,7 @@
 package com.hutchison.swandraft.model.tournament;
 
-import com.hutchison.swandraft.model.entity.PlayerEntity;
+import com.hutchison.swandraft.exception.PlayerAlreadyInQueueException;
+import com.hutchison.swandraft.model.player.Player;
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,51 +14,44 @@ import java.util.stream.Stream;
 @Value
 @Builder(toBuilder = true)
 public class TournamentQueue {
-    Map<Long, PlayerEntity> playerRecords;
-    String message;
+    Long tournamentQueueId;
+    Map<Long, Player> players;
 
     public TournamentQueue() {
-        playerRecords = Collections.emptyMap();
-        message = "Initialized. No records provided.";
+        this.tournamentQueueId = null;
+        this.players = Collections.emptyMap();
     }
 
-    public TournamentQueue(Map<Long, PlayerEntity> prs, String message) {
-        this.playerRecords = Collections.unmodifiableMap(prs);
-        this.message = message;
-    }
-
-    public TournamentQueue(PlayerEntity pr) {
-        this(Set.of(pr));
-    }
-
-    public TournamentQueue(Set<PlayerEntity> playerEntities) {
-        this.playerRecords = Collections.unmodifiableMap(playerEntities.stream()
+    public TournamentQueue(Long tournamentQueueId, Set<Player> players) {
+        this.tournamentQueueId = tournamentQueueId;
+        this.players = Collections.unmodifiableMap(players.stream()
                 .collect(Collectors.toMap(
-                        PlayerEntity::getDiscordId,
+                        Player::getDiscordId,
                         pr -> pr
                 )));
-        message = "Initialized from existing records.";
+//        message = "Initialized from existing records.";
     }
 
-    public TournamentQueue add(PlayerEntity playerEntity) {
-        if (playerRecords.get(playerEntity.getDiscordId()) != null) return this.toBuilder()
-                .message(playerEntity.getDiscordId() + " is already entered.")
-                .build();
+    private TournamentQueue(Long tournamentQueueId, Map<Long, Player> players) {
+        this.tournamentQueueId = tournamentQueueId;
+        this.players = players;
+    }
 
+    public TournamentQueue add(Player player) throws PlayerAlreadyInQueueException {
+        if (players.get(player.getDiscordId()) != null) throw new PlayerAlreadyInQueueException(player);
         return this.toBuilder()
-                .playerRecords(
+                .players(
                         Collections.unmodifiableMap(Stream.concat(
-                                Map.copyOf(this.playerRecords).values().stream(),
-                                Stream.of(playerEntity))
+                                Map.copyOf(this.players).values().stream(),
+                                Stream.of(player))
                                 .collect(Collectors.toMap(
-                                        PlayerEntity::getDiscordId,
+                                        Player::getDiscordId,
                                         pr -> pr
                                 ))))
-                .message(playerEntity.getDiscordId() + " successfully entered.")
                 .build();
     }
 
-    public Set<PlayerEntity> getPlayerRecords() {
-        return Set.copyOf(this.playerRecords.values());
+    public Set<Player> getPlayers() {
+        return Set.copyOf(this.players.values());
     }
 }

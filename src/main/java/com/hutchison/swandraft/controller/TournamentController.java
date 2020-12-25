@@ -1,7 +1,10 @@
 package com.hutchison.swandraft.controller;
 
-import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.dto.Result;
+import com.hutchison.swandraft.model.dto.enter.EnterRequest;
+import com.hutchison.swandraft.model.dto.enter.EnterResponse;
+import com.hutchison.swandraft.model.player.PlayerIdentifier;
+import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.service.TournamentService;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -33,13 +36,12 @@ public class TournamentController {
         return ResponseEntity.ok(service.start(forceRestart));
     }
 
-    @PostMapping(path = "/enter")
-    public ResponseEntity<String> enter(
-            @RequestBody @NonNull Long discordId,
-            @RequestBody(required = false) String name,
-            @RequestBody(required = false) Integer discriminator
+    @PostMapping(path = "/enter", consumes = "application/json")
+    public ResponseEntity<EnterResponse> enter(
+            @RequestBody @NonNull EnterRequest r
     ) {
-        return ResponseEntity.ok(service.enter(discordId, name, discriminator));
+        return ResponseEntity.ok(
+                service.enter(new PlayerIdentifier(r.getDiscordId(), r.getName(), r.getDiscriminator())));
     }
 
     @PutMapping(path = "/configure")

@@ -1,140 +1,120 @@
 package com.hutchison.swandraft.model.tournament;
 
 import com.hutchison.swandraft.model.dto.Result;
-import com.hutchison.swandraft.model.entity.PlayerEntity;
-import com.hutchison.swandraft.model.tournament.pairing.Pairing;
-import com.hutchison.swandraft.model.tournament.pairing.SeedingStyle;
+import com.hutchison.swandraft.model.player.Player;
+import com.hutchison.swandraft.model.tournament.round.Rounds;
+import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
+import org.hibernate.cfg.NotYetImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static com.hutchison.swandraft.model.tournament.pairing.SeedingStyle.CROSS;
+import static com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle.CROSS;
 
 @Value
 @Builder(toBuilder = true)
 public class Tournament {
+    // Constants
+    static final SeedingStyle DEFAULT_SEEDING_STYLE = CROSS;
+    static final int DEFAULT_POINTS_PER_WIN = 3;
+    static final int DEFAULT_POINTS_PER_DRAW = 1;
+    static final int DEFAULT_POINTS_PER_LOSS = 0;
+    static final int DEFAULT_GAMES_PER_MATCH = 3;
+
+    //    Immutable fields
     Long tournamentId;
     SeedingStyle seedingStyle;
     int totalRounds;
-    Set<PlayerEntity> playerEntities;
-    List<TournamentSnapshot> snapshots;
+    int pointsPerWin;
+    int pointsPerDraw;
+    int pointsPerLoss;
+    int gamesPerMatch;
+    Set<Player> players;
 
-    static final SeedingStyle DEFAULT_SEEDING_STYLE = CROSS;
+    //    Mutable fields
+    Rounds rounds;
 
     // For deserialization
-    Tournament(
+    private Tournament(
             Long tournamentId,
-            @NonNull SeedingStyle seedingStyle,
+            SeedingStyle seedingStyle,
             int totalRounds,
-            @NonNull Set<PlayerEntity> playerEntities,
-            @NonNull List<TournamentSnapshot> snapshots
+            Integer pointsPerWin,
+            Integer pointsPerDraw,
+            Integer pointsPerLoss,
+            int gamesPerMatch,
+            Set<Player> players,
+            Rounds rounds
     ) {
         this.tournamentId = tournamentId;
-        this.seedingStyle = seedingStyle;
-        this.totalRounds = totalRounds;
-        this.playerEntities = Collections.unmodifiableSet(playerEntities);
-        this.snapshots = snapshots;
-        validate();
-    }
-
-    // Brand new tournament
-    private Tournament(
-            @NonNull SeedingStyle seedingStyle,
-            int totalRounds,
-            @NonNull TournamentSnapshot initialSnapshot,
-            @NonNull Set<PlayerEntity> playerEntities) {
-        this.snapshots = new ArrayList<>();
-        snapshots.add(initialSnapshot);
-        this.seedingStyle = seedingStyle;
-        this.totalRounds = totalRounds;
-        this.playerEntities = Collections.unmodifiableSet(playerEntities);
+        this.seedingStyle = seedingStyle == null ? DEFAULT_SEEDING_STYLE : seedingStyle;
+        this.totalRounds = totalRounds == 0 ? calculateTotalRounds(players.size()) : totalRounds;
+        this.pointsPerWin = pointsPerWin == null ? DEFAULT_POINTS_PER_WIN : pointsPerWin;
+        this.pointsPerDraw = pointsPerDraw == null ? DEFAULT_POINTS_PER_DRAW : pointsPerDraw;
+        this.pointsPerLoss = pointsPerLoss == null ? DEFAULT_POINTS_PER_LOSS : pointsPerLoss;
+        this.gamesPerMatch = gamesPerMatch == 0 ? DEFAULT_GAMES_PER_MATCH : gamesPerMatch;
+        this.players = Collections.unmodifiableSet(players);
+        this.rounds = rounds;
         validate();
     }
 
     private void validate() {
-
-    }
-
-    public String report(Set<Result> results) {
-        TournamentSnapshot snapshot = getLatestSnapshot().report(results);
-        snapshots.add(snapshot);
-        return snapshot.getMessage();
-    }
-
-    public String getMessage() {
-        return getLatestSnapshot().getMessage();
-    }
-
-    public String advance() {
-        TournamentSnapshot snapshot = getLatestSnapshot().advance();
-        snapshots.add(snapshot);
-        return snapshot.getMessage();
-    }
-
-    public static Tournament create(@NonNull Set<PlayerEntity> playerEntities) {
-        return create(playerEntities, DEFAULT_SEEDING_STYLE, calculateTotalRounds(playerEntities.size()));
-    }
-
-    public static Tournament create(@NonNull Set<PlayerEntity> playerEntities, @NonNull SeedingStyle seedingStyle) {
-        return create(playerEntities, seedingStyle, calculateTotalRounds(playerEntities.size()));
-    }
-
-    public static Tournament create(@NonNull Set<PlayerEntity> playerEntities, @NonNull Integer totalRounds) {
-        return create(playerEntities, DEFAULT_SEEDING_STYLE, totalRounds);
-    }
-
-    public static Tournament create(@NonNull Set<PlayerEntity> playerEntities,
-                                    @NonNull SeedingStyle seedingStyle,
-                                    @NonNull Integer totalRounds) {
-//        validate(playerEntities, seedingStyle, totalRounds);
-        return new Tournament(
-                seedingStyle,
-                totalRounds,
-                buildInitialSnapshot(seedingStyle, playerEntities),
-                playerEntities
-        );
-    }
-
-    private static void validate(Set<PlayerEntity> playerEntities, SeedingStyle seedingStyle, Integer totalRounds) {
         List<String> errors = new ArrayList<>();
-        if (playerEntities == null || playerEntities.size() < 6) errors.add("Not enough players.");
-        if (seedingStyle == null) errors.add("No seeding style provided.");
-        if (totalRounds == null || totalRounds <= 0) errors.add("Total rounds must be a positive number.");
-        if (errors.size() > 0) throw new RuntimeException("Error creating tournament: \n- " +
+        if (totalRounds <= 0) errors.add("Total rounds must be a positive number.");
+        if (players == null || players.size() < 6) errors.add("Not enough players.");
+        if (rounds == null) errors.add("Tournament rounds have not been initialized.");
+        if (errors.size() > 0) throw new IllegalArgumentException("Error creating tournament: \n- " +
                 String.join("\n- ", errors));
     }
 
-    private TournamentSnapshot getLatestSnapshot() {
-        return snapshots.get(snapshots.size() - 1);
+    public String report(Set<Result> results) {
+//        TournamentSnapshot snapshot = getLatestSnapshot().report(results);
+//        snapshots.add(snapshot);
+//        return snapshot.getMessage();
+        throw new NotYetImplementedException();
     }
 
-    private static TournamentSnapshot buildInitialSnapshot(SeedingStyle seedingStyle,
-                                                           Set<PlayerEntity> playerEntities) {
-        return TournamentSnapshot.builder()
-                .currentRound(0)
-                .players(initializePlayers(seedingStyle, playerEntities))
-                .message("Initialized tournament.")
-                .build();
-    }
-
-    private static Map<Long, Player> initializePlayers(SeedingStyle seedingStyle,
-                                                       Set<PlayerEntity> playerEntities) {
-        return Pairing.initial(seedingStyle, playerEntities).stream()
-                .collect(Collectors.toMap(
-                        Player::getDiscordId,
-                        p -> p
-                ));
+    public String advance() {
+//        TournamentSnapshot snapshot = getLatestSnapshot().advance();
+//        snapshots.add(snapshot);
+//        return snapshot.getMessage();
+        throw new NotYetImplementedException();
     }
 
     private static int calculateTotalRounds(int playerCount) {
+        if (playerCount <= 0) throw new IllegalArgumentException("Cannot calculate total rounds: player count <= 0.");
         return (int) Math.ceil(Math.log(playerCount) / Math.log(2));
     }
+
+//    public static class TournamentBuilder {
+//        public Tournament build() {
+//            return new Tournament(
+//                    tournamentId,
+//                    seedingStyle,
+//                    totalRounds,
+//                    pointsPerWin,
+//                    pointsPerDraw,
+//                    pointsPerLoss,
+//                    gamesPerMatch,
+//                    players,
+//                    Rounds.builder()
+//                            .players(players)
+//                            .seedingStyle(seedingStyle)
+//                            .pointsPerWin(pointsPerWin)
+//                            .pointsPerDraw(pointsPerDraw)
+//                            .pointsPerLoss(pointsPerLoss)
+//                            .build()
+//            );
+//        }
+//
+//        private Tournament rounds(Rounds rounds) {
+//            throw new AssertionError();
+//        }
+//    }
 }
