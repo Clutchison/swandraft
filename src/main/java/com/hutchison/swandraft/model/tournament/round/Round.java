@@ -8,6 +8,8 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.Min;
+import java.util.Collections;
 import java.util.Map;
 
 @Getter
@@ -15,18 +17,19 @@ import java.util.Map;
 @ToString
 @EqualsAndHashCode
 public abstract class Round {
+    @Min(1)
+    protected int roundNumber;
     protected Map<Long, EnteredPlayer> enteredPlayers;
-    protected Map<EnteredPlayer, EnteredPlayer> pairings;
+    protected Map<EnteredPlayer, Pairing> pairings;
+    protected Map<Pairing, Result> results;
 
-    protected Round(@NonNull Map<Long, EnteredPlayer> enteredPlayers,
-                    @NonNull Map<EnteredPlayer, EnteredPlayer> pairings) {
-//        this.pairings = Pairings.pair(players);
-//        this.enteredPlayers = pairings.keySet().stream()
-//                .collect(Collectors.toMap(
-//                        EnteredPlayer::getDiscordId,
-//                        p -> p
-//                ));
-        this.enteredPlayers = enteredPlayers;
-        this.pairings = pairings;
+    protected Round(int roundNumber,
+                    @NonNull Map<Long, EnteredPlayer> enteredPlayers,
+                    @NonNull Map<EnteredPlayer, Pairing> pairings,
+                    @NonNull Map<Pairing, Result> results) {
+        this.roundNumber = roundNumber;
+        this.enteredPlayers = Collections.unmodifiableMap(enteredPlayers);
+        this.pairings = Collections.unmodifiableMap(pairings);
+        this.results = Collections.unmodifiableMap(results);
     }
 }

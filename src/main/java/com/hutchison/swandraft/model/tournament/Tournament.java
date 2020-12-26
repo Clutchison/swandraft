@@ -1,19 +1,20 @@
 package com.hutchison.swandraft.model.tournament;
 
-import com.hutchison.swandraft.model.dto.Result;
 import com.hutchison.swandraft.model.player.Player;
+import com.hutchison.swandraft.model.tournament.round.ResultState;
 import com.hutchison.swandraft.model.tournament.round.Rounds;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.hibernate.cfg.NotYetImplementedException;
+import org.springframework.data.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle.CROSS;
 
@@ -29,38 +30,42 @@ public class Tournament {
 
     //    Immutable fields
     Long tournamentId;
+    UUID tournamentUuid;
     SeedingStyle seedingStyle;
     int totalRounds;
     int pointsPerWin;
     int pointsPerDraw;
     int pointsPerLoss;
     int gamesPerMatch;
-    Set<Player> players;
+    List<Player> players;
 
     //    Mutable fields
+    @NonFinal
     Rounds rounds;
 
     // For deserialization
     private Tournament(
             Long tournamentId,
+            UUID tournamentUuid,
             SeedingStyle seedingStyle,
             int totalRounds,
             Integer pointsPerWin,
             Integer pointsPerDraw,
             Integer pointsPerLoss,
             int gamesPerMatch,
-            Set<Player> players,
+            List<Player> players,
             Rounds rounds
     ) {
         this.tournamentId = tournamentId;
+        this.tournamentUuid = tournamentUuid == null ? UUID.randomUUID() : tournamentUuid;
         this.seedingStyle = seedingStyle == null ? DEFAULT_SEEDING_STYLE : seedingStyle;
         this.totalRounds = totalRounds == 0 ? calculateTotalRounds(players.size()) : totalRounds;
         this.pointsPerWin = pointsPerWin == null ? DEFAULT_POINTS_PER_WIN : pointsPerWin;
         this.pointsPerDraw = pointsPerDraw == null ? DEFAULT_POINTS_PER_DRAW : pointsPerDraw;
         this.pointsPerLoss = pointsPerLoss == null ? DEFAULT_POINTS_PER_LOSS : pointsPerLoss;
         this.gamesPerMatch = gamesPerMatch == 0 ? DEFAULT_GAMES_PER_MATCH : gamesPerMatch;
-        this.players = Collections.unmodifiableSet(players);
-        this.rounds = rounds;
+        this.players = Collections.unmodifiableList(players);
+        this.rounds = rounds == null ? new Rounds(this.players, this.seedingStyle) : rounds;
         validate();
     }
 
@@ -73,11 +78,12 @@ public class Tournament {
                 String.join("\n- ", errors));
     }
 
-    public String report(Set<Result> results) {
-//        TournamentSnapshot snapshot = getLatestSnapshot().report(results);
-//        snapshots.add(snapshot);
-//        return snapshot.getMessage();
-        throw new NotYetImplementedException();
+    public Optional<Pair<Tournament, ResultState>> report(Report report) {
+        Optional<Pair<Rounds, ResultState>> newRounds = rounds.report(report);
+        return newRounds.map(nr -> Pair.of(
+                newRounds.get().getFirst().equals(rounds) ? this :
+                        this.toBuilder().rounds(nr.getFirst()).build(),
+                nr.getSecond()));
     }
 
     public String advance() {

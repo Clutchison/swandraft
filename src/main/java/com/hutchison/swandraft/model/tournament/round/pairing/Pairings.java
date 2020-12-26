@@ -1,14 +1,16 @@
 package com.hutchison.swandraft.model.tournament.round.pairing;
 
 import com.hutchison.swandraft.model.player.Player;
+import com.hutchison.swandraft.model.tournament.Tournament;
+import com.hutchison.swandraft.model.tournament.round.Pairing;
 import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Pairings {
@@ -17,8 +19,8 @@ public class Pairings {
         throw new AssertionError();
     }
 
-    public static Map<EnteredPlayer, EnteredPlayer> initial(@NonNull Set<Player> players,
-                                                            @NonNull SeedingStyle seedingStyle) {
+    public static Set<Pairing> initial(@NonNull List<Player> players,
+                                       @NonNull SeedingStyle seedingStyle) {
         switch (seedingStyle) {
             case CROSS:
                 return cross(players);
@@ -31,44 +33,43 @@ public class Pairings {
         }
     }
 
-    public static Map<EnteredPlayer, EnteredPlayer> swiss(Set<EnteredPlayer> players) {
+    public static Map<EnteredPlayer, EnteredPlayer> swiss(Tournament tournament) {
         return null;
     }
 
-    private static Map<EnteredPlayer, EnteredPlayer> cross(Set<Player> players) {
-        List<Player> tempRecords = new ArrayList<>(players);
+    private static Set<Pairing> cross(List<Player> players) {
         List<Player> prs = new ArrayList<>();
-        IntStream.range(0, tempRecords.size() / 2)
+        IntStream.range(0, players.size() / 2)
                 .forEach(i -> {
-                    prs.add(tempRecords.get(i));
-                    prs.add(tempRecords.get(i + tempRecords.size() / 2));
+                    prs.add(players.get(i));
+                    prs.add(players.get(i + players.size() / 2));
                 });
-        if (prs.size() % 2 == 1) prs.add(tempRecords.get(tempRecords.size() - 1));
-        return buildInitialPairings(prs);
+        if (prs.size() % 2 == 1) prs.add(players.get(players.size() - 1));
+        return buildInitialPairings(playersToEnteredPlayers(prs));
     }
 
-    private static Map<EnteredPlayer, EnteredPlayer> random(Set<Player> enteredPlayers) {
-        List<Player> prs = new ArrayList<>(enteredPlayers);
-        Collections.shuffle(prs);
-        return buildInitialPairings(prs);
+    private static Set<Pairing> random(List<Player> players) {
+        List<Player> shuffled = new ArrayList<>(players);
+        Collections.shuffle(shuffled);
+        return buildInitialPairings(playersToEnteredPlayers(shuffled));
     }
 
-    private static Map<EnteredPlayer, EnteredPlayer> buildInitialPairings(List<Player> prs) {
-        Map<EnteredPlayer, EnteredPlayer> enteredPlayers = new HashMap<>();
-        IntStream.range(0, prs.size())
+    private static List<EnteredPlayer> playersToEnteredPlayers(@NonNull List<Player> prs) {
+        return IntStream.range(0, prs.size())
+                .mapToObj(i -> EnteredPlayer.create(prs.get(i), i))
+                .collect(Collectors.toList());
+    }
+
+    private static Set<Pairing> buildInitialPairings(List<EnteredPlayer> enteredPlayers) {
+        Set<Pairing> pairings = IntStream.range(0, enteredPlayers.size())
                 .filter(i -> i % 2 == 0)
-                .forEach(i -> {
-                    EnteredPlayer p1 = EnteredPlayer.create(prs.get(i), i);
-                    EnteredPlayer p2 = EnteredPlayer.create(prs.get(i + 1), i + 1);
-                    enteredPlayers.put(p1, p2);
-                    enteredPlayers.put(p2, p1);
-                });
+                .mapToObj(i -> new Pairing(1, enteredPlayers.get(i), enteredPlayers.get(i + 1)))
+                .collect(Collectors.toSet());
 
         // Give bye to remaining player.
-        if (prs.size() % 2 == 1) enteredPlayers.put(
-                EnteredPlayer.create(prs.get(prs.size() - 1), prs.size() - 1),
-                EnteredPlayer.NO_OPPONENT);
+        if (enteredPlayers.size() % 2 == 1)
+            pairings.add(new Pairing(1, enteredPlayers.get(enteredPlayers.size() - 1)));
 
-        return enteredPlayers;
+        return pairings;
     }
 }

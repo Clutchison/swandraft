@@ -1,8 +1,7 @@
 package com.hutchison.swandraft.model.entity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.tournament.Tournament;
+import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Set;
@@ -32,8 +30,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class TournamentEntity {
 
-    static ObjectMapper objectMapper = new ObjectMapper();
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true, nullable = false, name = "tournament_id")
@@ -45,11 +41,31 @@ public class TournamentEntity {
     @Column(unique = false, nullable = false, name = "total_rounds")
     Integer totalRounds;
 
+    @Column(unique = false, nullable = false, name = "points_per_win")
+    Integer pointsPerWin;
+
+    @Column(unique = false, nullable = false, name = "points_per_draw")
+    Integer pointsPerDraw;
+
+    @Column(unique = false, nullable = false, name = "points_per_loss")
+    Integer pointsPerLoss;
+
+    @Column(unique = false, nullable = false, name = "games_per_match")
+    Integer gamesPerMatch;
+
     @ManyToMany(cascade = CascadeType.MERGE)
-    @JoinTable(name = "tournament_player_record",
+    @JoinTable(name = "tournament_player",
             joinColumns = @JoinColumn(name = "tournament_id"),
-            inverseJoinColumns = @JoinColumn(name = "player_record_id"))
+            inverseJoinColumns = @JoinColumn(name = "player_id"))
     Set<PlayerEntity> playerEntities;
+
+    public static TournamentEntity fromTournament(Tournament first) {
+        return null;
+    }
+
+    public Tournament toTournament() {
+        return null;
+    }
 
 //    public Tournament toTournament() {
 //        return Tournament.builder()

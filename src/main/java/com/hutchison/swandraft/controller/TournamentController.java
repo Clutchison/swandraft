@@ -1,10 +1,11 @@
 package com.hutchison.swandraft.controller;
 
-import com.hutchison.swandraft.model.dto.Result;
+import com.hutchison.swandraft.model.dto.ReportDto;
 import com.hutchison.swandraft.model.dto.enter.EnterRequest;
 import com.hutchison.swandraft.model.dto.enter.EnterResponse;
 import com.hutchison.swandraft.model.player.PlayerIdentifier;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
+import com.hutchison.swandraft.service.ReportResponse;
 import com.hutchison.swandraft.service.TournamentService;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import static com.hutchison.swandraft.model.log.SwanLogFactory.debug;
 
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -40,8 +41,9 @@ public class TournamentController {
     public ResponseEntity<EnterResponse> enter(
             @RequestBody @NonNull EnterRequest r
     ) {
-        return ResponseEntity.ok(
-                service.enter(new PlayerIdentifier(r.getDiscordId(), r.getName(), r.getDiscriminator())));
+        EnterResponse response = service.enter(new PlayerIdentifier(r.getDiscordId(), r.getName(), r.getDiscriminator()));
+        debug(response.getMessage());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping(path = "/configure")
@@ -61,8 +63,8 @@ public class TournamentController {
     }
 
     @PostMapping(path = "/report")
-    public ResponseEntity<String> report(@RequestBody Set<Result> results) {
-        return ResponseEntity.ok(service.report(results));
+    public ResponseEntity<ReportResponse> report(@RequestBody ReportDto reportDto) {
+        return ResponseEntity.ok(service.report(reportDto));
     }
 
     @PostMapping(path = "/end")

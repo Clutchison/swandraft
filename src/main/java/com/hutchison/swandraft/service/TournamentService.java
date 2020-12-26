@@ -1,13 +1,18 @@
 package com.hutchison.swandraft.service;
 
 import com.hutchison.swandraft.exception.PlayerAlreadyInQueueException;
-import com.hutchison.swandraft.model.dto.Result;
+import com.hutchison.swandraft.model.dto.ReportDto;
 import com.hutchison.swandraft.model.dto.enter.EnterResponse;
 import com.hutchison.swandraft.model.entity.PlayerEntity;
+import com.hutchison.swandraft.model.entity.TournamentEntity;
 import com.hutchison.swandraft.model.entity.TournamentQueueEntity;
 import com.hutchison.swandraft.model.player.Player;
 import com.hutchison.swandraft.model.player.PlayerIdentifier;
+import com.hutchison.swandraft.model.tournament.Report;
+import com.hutchison.swandraft.model.tournament.Tournament;
 import com.hutchison.swandraft.model.tournament.TournamentQueue;
+import com.hutchison.swandraft.model.tournament.round.ResultState;
+import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.repository.PlayerRepository;
 import com.hutchison.swandraft.repository.TournamentEntityRepository;
@@ -17,9 +22,12 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.Optional;
+
+import static com.hutchison.swandraft.model.tournament.round.ResultState.ERROR;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -95,9 +103,27 @@ public class TournamentService {
         throw new NotYetImplementedException();
     }
 
-    public String report(Set<Result> results) {
-//        return tournament.report(results);
-        throw new NotYetImplementedException();
+    public ReportResponse report(ReportDto reportDto) {
+        Tournament tournament = tournamentEntityRepository.findLatestTournament()
+                .orElseThrow(() -> new IllegalStateException("Failed to find running tournament."))
+                .toTournament();
+
+        EnteredPlayer enteredPlayer = tournament.getRounds()
+                .getOpenRound()
+                .getEnteredPlayers()
+                .get(reportDto.getDiscordId());
+
+        Report report = new Report(enteredPlayer, reportDto);
+        Optional<Pair<Tournament, ResultState>> newTournament = tournament.report(report);
+        if (newTournament.isPresent()) {
+            if (!newTournament.get().getFirst().equals(tournament)) {
+                TournamentEntity te = TournamentEntity.fromTournament(newTournament.get().getFirst());
+                tournamentEntityRepository.save(te);
+            }
+            return ReportResponse.fromState(newTournament.get().getSecond());
+        } else {
+            return ReportResponse.fromState(ERROR);
+        }
     }
 
     public String end() {
