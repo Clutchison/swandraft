@@ -1,7 +1,7 @@
 package com.hutchison.swandraft.model.dto.enter;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.hutchison.swandraft.model.dto.PlayerDto;
+import com.hutchison.swandraft.model.dto.player.PlayerDto;
 import com.hutchison.swandraft.model.player.Player;
 import lombok.Builder;
 import lombok.NonNull;

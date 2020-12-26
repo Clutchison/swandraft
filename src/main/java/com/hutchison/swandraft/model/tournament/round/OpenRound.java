@@ -1,10 +1,13 @@
 package com.hutchison.swandraft.model.tournament.round;
 
 import com.hutchison.swandraft.model.player.Player;
-import com.hutchison.swandraft.model.tournament.Report;
 import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
+import com.hutchison.swandraft.model.tournament.round.pairing.Pairing;
 import com.hutchison.swandraft.model.tournament.round.pairing.Pairings;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
+import com.hutchison.swandraft.model.tournament.round.result.Report;
+import com.hutchison.swandraft.model.tournament.round.result.Result;
+import com.hutchison.swandraft.model.tournament.round.result.ResultState;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

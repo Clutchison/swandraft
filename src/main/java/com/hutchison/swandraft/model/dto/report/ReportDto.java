@@ -1,4 +1,4 @@
-package com.hutchison.swandraft.model.dto;
+package com.hutchison.swandraft.model.dto.report;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;

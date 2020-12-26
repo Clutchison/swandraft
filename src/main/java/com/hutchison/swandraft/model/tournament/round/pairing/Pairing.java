@@ -1,4 +1,4 @@
-package com.hutchison.swandraft.model.tournament.round;
+package com.hutchison.swandraft.model.tournament.round.pairing;
 
 import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
 import lombok.NonNull;

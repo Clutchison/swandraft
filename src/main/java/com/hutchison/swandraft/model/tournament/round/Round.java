@@ -1,6 +1,8 @@
 package com.hutchison.swandraft.model.tournament.round;
 
 import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
+import com.hutchison.swandraft.model.tournament.round.pairing.Pairing;
+import com.hutchison.swandraft.model.tournament.round.result.Result;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

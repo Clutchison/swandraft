@@ -1,7 +1,7 @@
-package com.hutchison.swandraft.model.tournament.round;
+package com.hutchison.swandraft.model.tournament.round.result;
 
-import com.hutchison.swandraft.model.tournament.Report;
 import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
+import com.hutchison.swandraft.model.tournament.round.pairing.Pairing;
 import lombok.Value;
 
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.hutchison.swandraft.model.tournament.round.ResultState.*;
+import static com.hutchison.swandraft.model.tournament.round.result.ResultState.*;
 
 @Value
 public class Result {

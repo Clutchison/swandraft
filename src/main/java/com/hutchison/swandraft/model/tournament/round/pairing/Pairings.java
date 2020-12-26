@@ -2,7 +2,6 @@ package com.hutchison.swandraft.model.tournament.round.pairing;
 
 import com.hutchison.swandraft.model.player.Player;
 import com.hutchison.swandraft.model.tournament.Tournament;
-import com.hutchison.swandraft.model.tournament.round.Pairing;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class Pairings {
         }
     }
 
-    public static Map<EnteredPlayer, EnteredPlayer> swiss(Tournament tournament) {
+    public static Set<Pairing> swiss(Tournament tournament) {
         return null;
     }
 

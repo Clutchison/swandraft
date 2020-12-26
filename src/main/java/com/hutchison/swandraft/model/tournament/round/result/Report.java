@@ -1,6 +1,6 @@
-package com.hutchison.swandraft.model.tournament;
+package com.hutchison.swandraft.model.tournament.round.result;
 
-import com.hutchison.swandraft.model.dto.ReportDto;
+import com.hutchison.swandraft.model.dto.report.ReportDto;
 import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

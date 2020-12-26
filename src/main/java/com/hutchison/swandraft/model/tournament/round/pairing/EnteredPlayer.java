@@ -1,7 +1,6 @@
 package com.hutchison.swandraft.model.tournament.round.pairing;
 
 import com.hutchison.swandraft.model.player.Player;
-import com.hutchison.swandraft.model.tournament.round.Pairing;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

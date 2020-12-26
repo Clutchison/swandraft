@@ -1,4 +1,4 @@
-package com.hutchison.swandraft.model.dto;
+package com.hutchison.swandraft.model.dto.player;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.hutchison.swandraft.model.player.Player;

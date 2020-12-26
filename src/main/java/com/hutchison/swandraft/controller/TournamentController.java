@@ -1,11 +1,11 @@
 package com.hutchison.swandraft.controller;
 
-import com.hutchison.swandraft.model.dto.ReportDto;
+import com.hutchison.swandraft.model.dto.report.ReportDto;
 import com.hutchison.swandraft.model.dto.enter.EnterRequest;
 import com.hutchison.swandraft.model.dto.enter.EnterResponse;
 import com.hutchison.swandraft.model.player.PlayerIdentifier;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
-import com.hutchison.swandraft.service.ReportResponse;
+import com.hutchison.swandraft.model.dto.report.ReportResponse;
 import com.hutchison.swandraft.service.TournamentService;
 import lombok.AccessLevel;
 import lombok.NonNull;

@@ -1,17 +1,18 @@
 package com.hutchison.swandraft.service;
 
 import com.hutchison.swandraft.exception.PlayerAlreadyInQueueException;
-import com.hutchison.swandraft.model.dto.ReportDto;
+import com.hutchison.swandraft.model.dto.report.ReportDto;
+import com.hutchison.swandraft.model.dto.report.ReportResponse;
 import com.hutchison.swandraft.model.dto.enter.EnterResponse;
 import com.hutchison.swandraft.model.entity.PlayerEntity;
 import com.hutchison.swandraft.model.entity.TournamentEntity;
 import com.hutchison.swandraft.model.entity.TournamentQueueEntity;
 import com.hutchison.swandraft.model.player.Player;
 import com.hutchison.swandraft.model.player.PlayerIdentifier;
-import com.hutchison.swandraft.model.tournament.Report;
+import com.hutchison.swandraft.model.tournament.round.result.Report;
 import com.hutchison.swandraft.model.tournament.Tournament;
 import com.hutchison.swandraft.model.tournament.TournamentQueue;
-import com.hutchison.swandraft.model.tournament.round.ResultState;
+import com.hutchison.swandraft.model.tournament.round.result.ResultState;
 import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.repository.PlayerRepository;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.hutchison.swandraft.model.tournament.round.ResultState.ERROR;
+import static com.hutchison.swandraft.model.tournament.round.result.ResultState.ERROR;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)

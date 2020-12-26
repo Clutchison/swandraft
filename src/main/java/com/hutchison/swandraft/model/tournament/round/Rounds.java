@@ -1,8 +1,9 @@
 package com.hutchison.swandraft.model.tournament.round;
 
 import com.hutchison.swandraft.model.player.Player;
-import com.hutchison.swandraft.model.tournament.Report;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
+import com.hutchison.swandraft.model.tournament.round.result.Report;
+import com.hutchison.swandraft.model.tournament.round.result.ResultState;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

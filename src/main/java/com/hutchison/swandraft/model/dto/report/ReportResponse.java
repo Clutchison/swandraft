@@ -1,6 +1,6 @@
-package com.hutchison.swandraft.service;
+package com.hutchison.swandraft.model.dto.report;
 
-import com.hutchison.swandraft.model.tournament.round.ResultState;
+import com.hutchison.swandraft.model.tournament.round.result.ResultState;
 import lombok.NonNull;
 import lombok.Value;
 
