@@ -1,7 +1,5 @@
 package com.hutchison.swandraft.model.entity.round;
 
-import com.hutchison.swandraft.model.entity.round.ClosedRoundEntity;
-import com.hutchison.swandraft.model.entity.round.OpenRoundEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,21 +29,9 @@ public class RoundsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true, nullable = false, name = "rounds_id")
-    Long tournamentId;
+    Long roundsId;
 
     @OneToMany
     @JoinColumn(name = "rounds_id", referencedColumnName = "rounds_id")
-    Set<ClosedRoundEntity> closedRounds;
-
-    @Column(unique = false, nullable = false, name = "open_round")
-    OpenRoundEntity openRound;
-
-    @Column(unique = false, nullable = false, name = "points_per_win")
-    Integer pointsPerWin;
-
-    @Column(unique = false, nullable = false, name = "points_per_draw")
-    Integer pointsPerDraw;
-
-    @Column(unique = false, nullable = false, name = "points_per_loss")
-    Integer pointsPerLoss;
+    Set<RoundEntity> rounds;
 }

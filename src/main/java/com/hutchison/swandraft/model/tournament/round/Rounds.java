@@ -4,6 +4,8 @@ import com.hutchison.swandraft.model.player.Player;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.tournament.round.result.Report;
 import com.hutchison.swandraft.model.tournament.round.result.ResultState;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 @Value
 @Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Rounds {
     List<ClosedRound> closedRounds;
     OpenRound openRound;

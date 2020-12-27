@@ -20,6 +20,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity(name = "tournament")
 @Table(name = "tournament")

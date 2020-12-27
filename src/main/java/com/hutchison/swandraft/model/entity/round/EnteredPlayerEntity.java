@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -56,6 +57,10 @@ public class EnteredPlayerEntity {
     Boolean receivedBye;
 
     @ManyToMany
-    @JoinColumn(name = "entered_player_id", referencedColumnName = "entered_player_id")
+//    @JoinColumn(name = "entered_player_id", referencedColumnName = "entered_player_id")
+    @JoinTable(
+            name = "entered_player_opponents",
+            joinColumns = @JoinColumn(name = "player_id", referencedColumnName = "entered_player_id"),
+            inverseJoinColumns = @JoinColumn(name = "opponent_id", referencedColumnName = "entered_player_id"))
     Set<EnteredPlayerEntity> previousOpponents;
 }

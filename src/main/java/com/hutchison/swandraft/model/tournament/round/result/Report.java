@@ -30,7 +30,7 @@ public class Report {
 
     public boolean matchesOpponent(Report report) {
         return roundsWon == report.roundsLost &&
-                roundsLost == report.roundsLost &&
+                roundsLost == report.roundsWon &&
                 roundsDrawn == report.roundsDrawn;
     }
 }

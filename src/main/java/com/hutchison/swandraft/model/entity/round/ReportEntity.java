@@ -1,6 +1,5 @@
 package com.hutchison.swandraft.model.entity.round;
 
-import com.hutchison.swandraft.model.tournament.round.pairing.EnteredPlayer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,36 +16,31 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
-@Entity(name = "pairing")
-@Table(name = "pairing",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"opponent_id", "player_id", "round_number"})
-        })
+@Entity(name = "reports")
+@Table(name = "reports")
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PairingEntity {
+public class ReportEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true, nullable = false, name = "pairing_id")
-    Long pairingId;
-
-    @Column(unique = false, nullable = false, name = "round_number")
-    Integer roundNumber;
+    @Column(unique = true, nullable = false, name = "report_id")
+    Long reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")
-    EnteredPlayerEntity player;
+    EnteredPlayerEntity enteredPlayer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opponent_id")
-    EnteredPlayerEntity opponent;
+    @Column(unique = false, nullable = false, name = "rounds_won")
+    Integer roundsWon;
 
-    @Column(unique = false, nullable = false, name = "bye")
-    Boolean bye;
+    @Column(unique = false, nullable = false, name = "rounds_lost")
+    Integer roundsLost;
+
+    @Column(unique = false, nullable = false, name = "rounds_drawn")
+    Integer roundsDrawn;
 }

@@ -31,7 +31,6 @@ public class Tournament {
 
     //    Immutable fields
     Long tournamentId;
-    UUID tournamentUuid;
     SeedingStyle seedingStyle;
     int totalRounds;
     int pointsPerWin;
@@ -47,7 +46,6 @@ public class Tournament {
     // For deserialization
     private Tournament(
             Long tournamentId,
-            UUID tournamentUuid,
             SeedingStyle seedingStyle,
             int totalRounds,
             Integer pointsPerWin,
@@ -58,7 +56,6 @@ public class Tournament {
             Rounds rounds
     ) {
         this.tournamentId = tournamentId;
-        this.tournamentUuid = tournamentUuid == null ? UUID.randomUUID() : tournamentUuid;
         this.seedingStyle = seedingStyle == null ? DEFAULT_SEEDING_STYLE : seedingStyle;
         this.totalRounds = totalRounds == 0 ? calculateTotalRounds(players.size()) : totalRounds;
         this.pointsPerWin = pointsPerWin == null ? DEFAULT_POINTS_PER_WIN : pointsPerWin;
