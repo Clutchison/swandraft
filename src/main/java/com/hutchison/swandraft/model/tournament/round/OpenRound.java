@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.util.Pair;
 
@@ -28,13 +29,23 @@ import java.util.stream.Stream;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @ToString
 @EqualsAndHashCode(callSuper = true)
+@Value
 public class OpenRound extends Round {
 
-    private OpenRound(int roundNumber,
+    private OpenRound(Long roundId,
+                      int roundNumber,
                       @NonNull Map<Long, EnteredPlayer> enteredPlayers,
                       @NonNull Map<EnteredPlayer, Pairing> pairings,
                       @NonNull Map<Pairing, Result> results) {
-        super(roundNumber, enteredPlayers, pairings, results);
+        super(roundId, roundNumber, enteredPlayers, pairings, results);
+    }
+
+    protected OpenRound(Long roundId,
+                        int roundNumber,
+                        @NonNull Set<EnteredPlayer> enteredPlayers,
+                        @NonNull Set<Pairing> pairings,
+                        @NonNull Set<Result> results) {
+        super(roundId, roundNumber, enteredPlayers, pairings, results);
     }
 
     public static OpenRound createFirstRound(@NonNull List<Player> players,
@@ -58,6 +69,7 @@ public class OpenRound extends Round {
                         Result::create
                 ));
         return new OpenRound(
+                null,
                 1,
                 playerMap,
                 pairingMap,
@@ -76,6 +88,7 @@ public class OpenRound extends Round {
                 newResults.put(pairing, result.get());
                 return Optional.of(Pair.of(
                         new OpenRound(
+                                roundId,
                                 roundNumber,
                                 enteredPlayers,
                                 pairings,

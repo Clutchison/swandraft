@@ -4,8 +4,6 @@ import com.hutchison.swandraft.model.player.Player;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import com.hutchison.swandraft.model.tournament.round.result.Report;
 import com.hutchison.swandraft.model.tournament.round.result.ResultState;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -17,12 +15,19 @@ import java.util.Optional;
 
 @Value
 @Builder(toBuilder = true)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Rounds {
+    Long roundsId;
     List<ClosedRound> closedRounds;
     OpenRound openRound;
 
+    private Rounds(Long roundsId, List<ClosedRound> closedRounds, @NonNull OpenRound openRound) {
+        this.roundsId = roundsId;
+        this.closedRounds = closedRounds == null ? new ArrayList<>() : closedRounds;
+        this.openRound = openRound;
+    }
+
     public Rounds(List<Player> players, SeedingStyle seedingStyle) {
+        this.roundsId = null;
         this.closedRounds = new ArrayList<>();
         openRound = OpenRound.createFirstRound(players, seedingStyle);
     }

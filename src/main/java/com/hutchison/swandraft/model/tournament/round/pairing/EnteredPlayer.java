@@ -1,23 +1,27 @@
 package com.hutchison.swandraft.model.tournament.round.pairing;
 
 import com.hutchison.swandraft.model.player.Player;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Value
 @Builder(toBuilder = true)
-public class EnteredPlayer implements Serializable {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class EnteredPlayer {
 
+    Long enteredPlayerId;
     @NonNull Player player;
     int points;
     int startingPosition;
     boolean receivedBye;
-    //    boolean reported;
     @NonNull List<Pairing> pairings;
 
     static EnteredPlayer create(Player p, int startingPosition) {
@@ -30,7 +34,7 @@ public class EnteredPlayer implements Serializable {
                 .build();
     }
 
-    private static EnteredPlayerBuilder builder() {
+    public static EnteredPlayerBuilder builder() {
         return new EnteredPlayerBuilder();
     }
 

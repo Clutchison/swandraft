@@ -1,5 +1,6 @@
 package com.hutchison.swandraft.model.entity;
 
+import com.hutchison.swandraft.model.entity.round.RoundsEntity;
 import com.hutchison.swandraft.model.tournament.Tournament;
 import com.hutchison.swandraft.model.tournament.round.pairing.SeedingStyle;
 import lombok.AccessLevel;
@@ -12,15 +13,17 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.Set;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity(name = "tournament")
 @Table(name = "tournament")
@@ -60,12 +63,26 @@ public class TournamentEntity {
             inverseJoinColumns = @JoinColumn(name = "player_id"))
     Set<PlayerEntity> playerEntities;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rounds_id")
+    RoundsEntity rounds;
+
     public static TournamentEntity fromTournament(Tournament first) {
         return null;
     }
 
     public Tournament toTournament() {
-        return null;
+        return Tournament.builder()
+                .tournamentId(tournamentId)
+                .seedingStyle(seedingStyle)
+                .totalRounds(totalRounds)
+                .pointsPerWin(pointsPerWin)
+                .pointsPerDraw(pointsPerDraw)
+                .pointsPerLoss(pointsPerLoss)
+                .gamesPerMatch(gamesPerMatch)
+                .players(playerEntities.stream().map(PlayerEntity::toPlayer).collect(Collectors.toList()))
+                .rounds(rounds.toRounds())
+                .build();
     }
 
 //    public Tournament toTournament() {

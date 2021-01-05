@@ -7,7 +7,6 @@ import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -62,12 +61,12 @@ public class Pairings {
     private static Set<Pairing> buildInitialPairings(List<EnteredPlayer> enteredPlayers) {
         Set<Pairing> pairings = IntStream.range(0, enteredPlayers.size())
                 .filter(i -> i % 2 == 0)
-                .mapToObj(i -> new Pairing(1, enteredPlayers.get(i), enteredPlayers.get(i + 1)))
+                .mapToObj(i -> Pairing.create(1, enteredPlayers.get(i), enteredPlayers.get(i + 1)))
                 .collect(Collectors.toSet());
 
         // Give bye to remaining player.
         if (enteredPlayers.size() % 2 == 1)
-            pairings.add(new Pairing(1, enteredPlayers.get(enteredPlayers.size() - 1)));
+            pairings.add(Pairing.bye(1, enteredPlayers.get(enteredPlayers.size() - 1)));
 
         return pairings;
     }

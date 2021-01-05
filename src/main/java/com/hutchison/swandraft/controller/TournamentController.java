@@ -49,7 +49,7 @@ public class TournamentController {
     @PutMapping(path = "/configure")
     public ResponseEntity<String> configure(@RequestBody String seedingStyle,
                                             @RequestBody Integer totalRounds) {
-        return ResponseEntity.ok(service.configure(SeedingStyle.fromString(seedingStyle), totalRounds));
+        return ResponseEntity.ok(service.configure(SeedingStyle.valueOf(seedingStyle), totalRounds));
     }
 
     @PostMapping(path = "/recover")

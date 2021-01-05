@@ -1,6 +1,8 @@
 package com.hutchison.swandraft.model.entity.round;
 
 
+import com.hutchison.swandraft.model.tournament.round.result.Report;
+import com.hutchison.swandraft.model.tournament.round.result.Result;
 import com.hutchison.swandraft.model.tournament.round.result.ResultState;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -50,9 +52,15 @@ public class ResultEntity {
     Set<ReportEntity> reports;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id")
+    @JoinColumn(name = "pairing_id")
     PairingEntity pairing;
 
     @Column(unique = false, nullable = false, name = "state")
     ResultState state;
+
+    public Result toResult() {
+        return new Result(ReportEntity.toReportMap(reports),
+                pairing.toPairing(),
+                state);
+    }
 }
